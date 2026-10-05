@@ -17,7 +17,6 @@
 
 #ifndef __HIER_H
 #define __HIER_H
-#include <malloc.h>
 #include <cstdio>
 //#include <string.h>
 #include <stdlib.h>

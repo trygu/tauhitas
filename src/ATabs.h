@@ -19,7 +19,6 @@
 #define __TABS_H
 #include <stdlib.h>
 #include <cstdio>
-#include <malloc.h>
 #include <math.h>
 #include <vector>
 #include <string>

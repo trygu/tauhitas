@@ -38,35 +38,10 @@ void   CSPSetIntegerConstant(const char*, const int, int);
 double CSPGetDoubleConstant(const char*, const int);
 int    CSPGetIntegerConstant(const char*, const int);
 
-namespace CPLEXv{
-IMPORTFUNC void   CSPSetFileNames(const char*);
-IMPORTFUNC void   CSPFreeFileNames();
-IMPORTFUNC void   CSPSetDoubleConstant(const int, double);
-IMPORTFUNC void   CSPSetIntegerConstant(const int, int);
-IMPORTFUNC double CSPGetDoubleConstant(const int);
-IMPORTFUNC int    CSPGetIntegerConstant(const int);
-IMPORTFUNC int    CSPoptimize(IProgressListener*);
-IMPORTFUNC int    CSPloadprob(int,double*,int,double*,int*,char*,double*,double*,double*,double*,char**,int*,int*,signed char*);
-IMPORTFUNC int    CSPfreeprob();
-IMPORTFUNC int    CSPsolution(int*, int*,char*);
-IMPORTFUNC int    CSPrelbounds(int,int*,double*,double*,char);
-}
-
+// Only the open-source back-end is built now. The CSP engine is compiled
+// against HiGHS and exposes its CSP* API under the "SCIP" name, so every
+// requested solver is dispatched to this single implementation.
 namespace SCIPv{
-IMPORTFUNC void   CSPSetFileNames(const char*);
-IMPORTFUNC void   CSPFreeFileNames();
-IMPORTFUNC void   CSPSetDoubleConstant(const int, double);
-IMPORTFUNC void   CSPSetIntegerConstant(const int, int);
-IMPORTFUNC double CSPGetDoubleConstant(const int);
-IMPORTFUNC int    CSPGetIntegerConstant(const int);
-IMPORTFUNC int    CSPoptimize(IProgressListener*);
-IMPORTFUNC int    CSPloadprob(int,double*,int,double*,int*,char*,double*,double*,double*,double*,char**,int*,int*,signed char*);
-IMPORTFUNC int    CSPfreeprob();
-IMPORTFUNC int    CSPsolution(int*, int*,char*);
-IMPORTFUNC int    CSPrelbounds(int,int*,double*,double*,char);
-}
-
-namespace XPRESSv{
 IMPORTFUNC void   CSPSetFileNames(const char*);
 IMPORTFUNC void   CSPFreeFileNames();
 IMPORTFUNC void   CSPSetDoubleConstant(const int, double);

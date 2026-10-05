@@ -68,49 +68,7 @@ FILE* LogFile;
 
 std::string LogName;
 
-namespace CPLEXv{
-IMPORTFUNC CPXENVptr Env;
-IMPORTFUNC void   CSPSetFileNames(const char*);
-IMPORTFUNC void   CSPFreeFileNames();
-IMPORTFUNC void   CSPSetDoubleConstant(const int, double);
-IMPORTFUNC void   CSPSetIntegerConstant(const int, int);
-IMPORTFUNC double CSPGetDoubleConstant(const int);
-IMPORTFUNC int    CSPGetIntegerConstant(const int);
-IMPORTFUNC int    CSPoptimize();
-IMPORTFUNC int    CSPloadprob(int,double*,int,double*,int*,char*,double*,double*,double*,double*,char**,int*,int*,signed char*);
-IMPORTFUNC int    CSPfreeprob(void);
-IMPORTFUNC int    CSPsolution(int*, int*,char*);
-IMPORTFUNC int    CSPrelbounds(int,int*,double*,double*,char);
-}
-
-namespace SCIPv{
-SCIP   *_scip;
-IMPORTFUNC SCIP_LPI **Env;
-IMPORTFUNC void   CSPSetFileNames(const char*);
-IMPORTFUNC void   CSPFreeFileNames();
-IMPORTFUNC void   CSPSetDoubleConstant(const int, double);
-IMPORTFUNC void   CSPSetIntegerConstant(const int, int);
-IMPORTFUNC double CSPGetDoubleConstant(const int);
-IMPORTFUNC int    CSPGetIntegerConstant(const int);
-IMPORTFUNC int    CSPoptimize();
-IMPORTFUNC int    CSPloadprob(int,double*,int,double*,int*,char*,double*,double*,double*,double*,char**,int*,int*,signed char*);
-IMPORTFUNC int    CSPfreeprob(void);
-IMPORTFUNC int    CSPsolution(int*, int*,char*);
-IMPORTFUNC int    CSPrelbounds(int,int*,double*,double*,char);
-}
-
-namespace XPRESSv{
-IMPORTFUNC void   CSPSetFileNames(const char*);
-IMPORTFUNC void   CSPFreeFileNames();
-IMPORTFUNC void   CSPSetDoubleConstant(const int, double);
-IMPORTFUNC void   CSPSetIntegerConstant(const int, int);
-IMPORTFUNC double CSPGetDoubleConstant(const int);
-IMPORTFUNC int    CSPGetIntegerConstant(const int);
-IMPORTFUNC int    CSPloadprob(int,double*,int,double*,int*,char*,double*,double*,double*,double*,char**,int*,int*,signed char*);
-IMPORTFUNC int    CSPoptimize();
-IMPORTFUNC int    CSPfreeprob();
-IMPORTFUNC int    CSPsolution(int*,int*,char*);
-IMPORTFUNC int    CSPrelbounds(int,int*,double*,double*,char);
-}  //namespace SCIPv end
+// The CSP* engine API is declared in WrapCSP.h (namespace SCIPv), which is
+// backed by the single open-source LP solver (HiGHS).
 
 #endif

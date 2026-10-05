@@ -15,11 +15,6 @@
 * warranties or conditions of any kind, either express or implied.
 */
 
-#include "cplex.h"
-#include "xprs.h"
-#include <scip/scip.h>
-#include <scip/scipdefplugins.h>
-#include "objscip/objscip.h"
 #include "HiTaSCtrl.h"
 #include "AErrors.h"
 #include "Amain.h"
@@ -78,14 +73,9 @@ void HiTaSCtrl::FireUpdateTables(int perc)
 
 void HiTaSCtrl::CloseSolver(const char* Solver)
 {
-    if (strcmp(Solver,"XPRESS")==0)
-        XPRSfree();
-
-    if (strcmp(Solver,"CPLEX")==0)
-	CPXcloseCPLEX(&CPLEXv::Env);
-                
-    if (strcmp(Solver,"SCIP")==0)
-        SCIPfree(&SCIPv::_scip);
+    // The CSP engine is linked statically against the open-source LP back-end
+    // (HiGHS, exposed as the "SCIP" solver); there is nothing to close here.
+    (void)Solver;
 }
 
 // Check for license (if necessary) and start solver
@@ -94,85 +84,29 @@ long HiTaSCtrl::CheckStart(const char* Solver, const char* ILMFile)
 {
     bool KnownSolver = false;
     FILE *logfile = OpenFile(LogName.c_str(),"w");
-    
+
     fprintf(logfile,"-------------------------------------------------------------------------------\n");
     fprintf(logfile,"libTauHiTaS version is %s\n\n", VERSIONNUMBER);
     fprintf(logfile,"Using %s\n", Solver);
-    
+
     fclose(logfile);
-        
-    if (strcmp(Solver,"CPLEX")==0)
+
+    // Only the open-source solver is supported now. The CSP engine is built
+    // against HiGHS and exposes its CSP* API under the "SCIP" name.
+    if ((strcmp(Solver,"SCIP")==0) || (strcmp(Solver,"CPLEX")==0) || (strcmp(Solver,"XPRESS")==0))
     {
-        if ((strcmp(ILMFile,"")!=0) && (ILMFile != NULL))
-        {
-            char* ILOGInfo;
-            ILOGInfo = (char*) malloc((19 + strlen(ILMFile))*sizeof(char));
-            strcpy(ILOGInfo, "ILOG_LICENSE_FILE=");
-            strcat(ILOGInfo, ILMFile);
-            CPXputenv(ILOGInfo);
-            free(ILOGInfo);
-        }
-        int tmpstatus;
-        CPLEXv::Env=CPXopenCPLEX(&tmpstatus);
-        if (CPLEXv::Env == NULL)
-        {
-            WriteErrorToLog(LogName,JJ_NOCPLEXLICENCE);
-            return(JJ_NOCPLEXLICENCE);
-        }
-        // At this point all should be OK
         logfile = OpenFile(LogName.c_str(),"a");
-        fprintf(logfile,"CPlex version is %s\n\n",CPXversion(CPLEXv::Env));
+        fprintf(logfile,"Using open-source LP back-end (HiGHS)\n\n");
         fclose(logfile);
         KnownSolver = true;
     }
-    
-    if (strcmp(Solver,"XPRESS")==0)
-    {
-        int ierr;
-        char slicmsg[256] = "";
-        std::string ferror;
-        FILE *ErrorFile;
 
-        ferror = PrepFile("XPerror.log");
-        
-        ierr = XPRSinit(NULL);
-
-        if (ierr != 0)
-        {
-            XPRSgetlicerrmsg(slicmsg,256);
-            ErrorFile = OpenFile(ferror.c_str(),"a");
-            fprintf(ErrorFile,"%s\n",slicmsg);
-            fclose(ErrorFile);
-            WriteErrorToLog(LogName,JJ_NOXPDONGLE);
-            return(JJ_NOXPDONGLE);
-        }
-        
-        // At this point all should be OK    
-        char version[16];
-        XPRSgetversion(version);
-        logfile = OpenFile(LogName.c_str(),"a");
-        fprintf(logfile,"XPress version is %s\n\n",version);
-        fclose(logfile);
-        KnownSolver = true;        
-    }
-    
-    if (strcmp(Solver,"SCIP")==0) 
-    {
-        SCIPcreate(&SCIPv::_scip);
-        
-        logfile = OpenFile(LogName.c_str(),"a");
-        fprintf(logfile,"SCIP version is %lf\n",SCIPversion());
-        fprintf(logfile,"\tusing %s\n\n",SCIPlpiGetSolverName());
-        fclose(logfile);
-        KnownSolver = true;        
-    }
-    
     if (KnownSolver)
     {
         char buffer[256];
         time_t timestamp;
         struct tm * timestring;
-    
+
         logfile = OpenFile(LogName.c_str(),"a");
         //time(&timestamp);
         timestamp = time(NULL);
@@ -187,7 +121,7 @@ long HiTaSCtrl::CheckStart(const char* Solver, const char* ILMFile)
     {
         logfile = OpenFile(LogName.c_str(),"a");
         fprintf(logfile,"Unknown (or not yet implemented) solver specified: %s\n",Solver);
-        fprintf(logfile,"Currently only CPLEX, XPRESS, SCIP implemented for Modular and Optimal.\n\n");
+        fprintf(logfile,"Currently only the open-source (SCIP/HiGHS) solver is implemented for Modular and Optimal.\n\n");
         fclose(logfile);
         return(HITAS_UNKNOWNSOLVER);
     }

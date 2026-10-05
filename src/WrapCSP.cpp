@@ -16,75 +16,49 @@
 */
 
 // Makes choice of Solver-dll invisible to user
-// Additional Solver available? Add a line to each wrapper function.
-// Currently only CPLEX, SCIP and XPRESS available
+// All solver names are dispatched to the single open-source CSP engine
+// (built against HiGHS), which exports its CSP* API under the "SCIP" name.
 #include <string.h>
 #include "WrapCSP.h"
 #include "resource.h"
 
 void CSPSetFileNames(const char* Solver, const char* dir)
 {
-    if (strcmp(Solver,"CPLEX")==0) CPLEXv::CSPSetFileNames(dir);
-    if (strcmp(Solver,"SCIP")==0) SCIPv::CSPSetFileNames(dir);
-    if (strcmp(Solver,"XPRESS")==0) XPRESSv::CSPSetFileNames(dir);
+    SCIPv::CSPSetFileNames(dir);
 }
 
 void CSPFreeFileNames(const char* Solver)
 {
-    if (strcmp(Solver,"CPLEX")==0) CPLEXv::CSPFreeFileNames();
-    if (strcmp(Solver,"SCIP")==0) SCIPv::CSPFreeFileNames();
-    if (strcmp(Solver,"XPRESS")==0) XPRESSv::CSPFreeFileNames();
+    SCIPv::CSPFreeFileNames();
 }
 
 void   CSPSetDoubleConstant(const char* Solver, const int VarNumber, double VarValue)
 {
-    if (strcmp(Solver,"CPLEX")==0) CPLEXv::CSPSetDoubleConstant(VarNumber, VarValue);
-    if (strcmp(Solver,"SCIP")==0) SCIPv::CSPSetDoubleConstant(VarNumber, VarValue);
-    if (strcmp(Solver,"XPRESS")==0) XPRESSv::CSPSetDoubleConstant(VarNumber, VarValue);
+    SCIPv::CSPSetDoubleConstant(VarNumber, VarValue);
 }
 
 void   CSPSetIntegerConstant(const char* Solver, const int VarNumber, int VarValue)
 {
-    if (strcmp(Solver,"CPLEX")==0) CPLEXv::CSPSetIntegerConstant(VarNumber, VarValue);
-    if (strcmp(Solver,"SCIP")==0) SCIPv::CSPSetIntegerConstant(VarNumber, VarValue);
-    if (strcmp(Solver,"XPRESS")==0) XPRESSv::CSPSetIntegerConstant(VarNumber, VarValue);
+    SCIPv::CSPSetIntegerConstant(VarNumber, VarValue);
 }
 
 double CSPGetDoubleConstant(const char* Solver, const int VarNumber)
 {
-    double retval = -1;
-    if (strcmp(Solver,"CPLEX")==0)  retval = CPLEXv::CSPGetDoubleConstant(VarNumber);
-    if (strcmp(Solver,"SCIP")==0)   retval = SCIPv::CSPGetDoubleConstant(VarNumber);
-    if (strcmp(Solver,"XPRESS")==0) retval = XPRESSv::CSPGetDoubleConstant(VarNumber);
-    return retval;
+    return SCIPv::CSPGetDoubleConstant(VarNumber);
 }
 int    CSPGetIntegerConstant(const char* Solver, const int VarNumber)
 {
-    int retval = -1;
-    if (strcmp(Solver,"CPLEX")==0)  retval = CPLEXv::CSPGetIntegerConstant(VarNumber);
-    if (strcmp(Solver,"SCIP")==0)   retval = SCIPv::CSPGetIntegerConstant(VarNumber);
-    if (strcmp(Solver,"XPRESS")==0) retval = XPRESSv::CSPGetIntegerConstant(VarNumber);
-    return retval;
+    return SCIPv::CSPGetIntegerConstant(VarNumber);
 }
 
 int    CSPoptimize(const char* Solver, IProgressListener* ProgressListener)
 {
-    int retval = -1;
-    if (strcmp(Solver,"CPLEX")==0)  retval = CPLEXv::CSPoptimize(ProgressListener);
-    if (strcmp(Solver,"SCIP")==0)   retval = SCIPv::CSPoptimize(ProgressListener);
-    if (strcmp(Solver,"XPRESS")==0) retval = XPRESSv::CSPoptimize(ProgressListener);
-    return retval;
+    return SCIPv::CSPoptimize(ProgressListener);
 }
 
 int    CSPloadprob(const char* Solver, int nsums_,double *rhs_,int ncells_,double *data_,int  *weight_,char *status_,double *lpl_,double *upl_,double *lb_,double *ub_,char **names_,int  *nlist_,int  *listcell_,signed char *listcoef_)
 {
-    int retval = -1;
-    if (strcmp(Solver,"CPLEX")==0)
-        retval = CPLEXv::CSPloadprob(nsums_,rhs_,ncells_,data_,weight_,status_,lpl_,upl_,lb_,ub_,names_,nlist_,listcell_,listcoef_);
-    if (strcmp(Solver,"SCIP")==0) 
-        retval = SCIPv::CSPloadprob(nsums_,rhs_,ncells_,data_,weight_,status_,lpl_,upl_,lb_,ub_,names_,nlist_,listcell_,listcoef_);
-    if (strcmp(Solver,"XPRESS")==0) 
-        retval = XPRESSv::CSPloadprob(nsums_,rhs_,ncells_,data_,weight_,status_,lpl_,upl_,lb_,ub_,names_,nlist_,listcell_,listcoef_);
+    int retval = SCIPv::CSPloadprob(nsums_,rhs_,ncells_,data_,weight_,status_,lpl_,upl_,lb_,ub_,names_,nlist_,listcell_,listcoef_);
     if (retval){
         throw(HITAS_JJNOTLOADED);
     }
@@ -93,27 +67,15 @@ int    CSPloadprob(const char* Solver, int nsums_,double *rhs_,int ncells_,doubl
 
 int    CSPfreeprob(const char* Solver)
 {
-    int retval = -1;
-    if (strcmp(Solver,"CPLEX")==0)  retval = CPLEXv::CSPfreeprob();
-    if (strcmp(Solver,"SCIP")==0)   retval = SCIPv::CSPfreeprob();    
-    if (strcmp(Solver,"XPRESS")==0) retval = XPRESSv::CSPfreeprob();  
-    return retval;
+    return SCIPv::CSPfreeprob();
 }
 
 int    CSPsolution(const char* Solver, int *lowerb_,int *upperb_,char *status_)
 {
-    int retval = -1;
-    if (strcmp(Solver,"CPLEX")==0)  retval = CPLEXv::CSPsolution(lowerb_,upperb_,status_);
-    if (strcmp(Solver,"SCIP")==0)   retval = SCIPv::CSPsolution(lowerb_,upperb_,status_);
-    if (strcmp(Solver,"XPRESS")==0) retval = XPRESSv::CSPsolution(lowerb_,upperb_,status_);    
-    return retval;
+    return SCIPv::CSPsolution(lowerb_,upperb_,status_);
 }
 
 int    CSPrelbounds(const char* Solver, int nlist,int *list,double *ub,double *lb,char type)
 {
-    int retval = -1;
-    if (strcmp(Solver,"CPLEX")==0)  retval = CPLEXv::CSPrelbounds(nlist,list,ub,lb,type);
-    if (strcmp(Solver,"SCIP")==0)   retval = SCIPv::CSPrelbounds(nlist,list,ub,lb,type);
-    if (strcmp(Solver,"XPRESS")==0) retval = XPRESSv::CSPrelbounds(nlist,list,ub,lb,type);    
-    return retval;
+    return SCIPv::CSPrelbounds(nlist,list,ub,lb,type);
 }
