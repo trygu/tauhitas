@@ -620,7 +620,7 @@ long HiTaSCtrl::AHiTaS(const char* ParsFile, const char* FilesFile, long MaxTime
         
         int JJaant=0, Totaant=0, aantBT=0;
         int res=0, i, k, tel, M, ObjVal, ReturnCode=0, realdim;
-        int MAXLINE=256;
+        const int MAXLINE=256;
 
         bool DaCapo=true;               // Boolean used to control backtracking
         int newtab;                     // Integer used to control backtracking
