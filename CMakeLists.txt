@@ -4,8 +4,9 @@
 # HiGHS LP solver. The historical CPLEX/XPRESS code paths have been removed;
 # every solver name is dispatched to the single "SCIP" (HiGHS-backed) CSP API.
 #
-# The SWIG JNI wrapper (HiTaSCtrl_wrap) is intentionally excluded; bindings to
-# the new stack are generated with pybind11 instead of SWIG.
+# The legacy SWIG JNI wrapper (HiTaSCtrl_wrap) and the CPLEX/XPRESS solver
+# headers have been removed; bindings to the new stack are generated with
+# pybind11 (see python/cpp/bind_hitas.cpp in the top-level repo).
 
 cmake_minimum_required(VERSION 3.16)
 
