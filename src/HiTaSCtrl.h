@@ -68,7 +68,7 @@ private:
 public:
     HiTaSCtrl()
     {
-        //m_ProgressListener = NULL;
+        m_ProgressListener = NULL;
         // Load from file the strings assigned to error-codes
 	//LoadErrorStrings(ErrorStrings);
     
