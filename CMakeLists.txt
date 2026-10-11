@@ -12,6 +12,26 @@ cmake_minimum_required(VERSION 3.16)
 
 project(tauargus_hitas CXX)
 
+# Embed the legacy error strings (ErrorStrings.txt, lines "NAME = code = text")
+# at build time. The legacy GUI loaded the file from the working directory at
+# runtime; the headless engine has no working directory to rely on, so the
+# table is generated into the binary directory and compiled in.
+set(HITAS_ERRORSTRINGS_TXT ${CMAKE_CURRENT_SOURCE_DIR}/ErrorStrings.txt)
+set(HITAS_ERRORSTRINGS_INC ${CMAKE_CURRENT_BINARY_DIR}/ErrorStrings_generated.inc)
+file(READ ${HITAS_ERRORSTRINGS_TXT} _hitas_es_raw)
+string(REGEX REPLACE "\r\n" "\n" _hitas_es_raw "${_hitas_es_raw}")
+string(REGEX MATCHALL "[^\n]+" _hitas_es_lines "${_hitas_es_raw}")
+file(WRITE ${HITAS_ERRORSTRINGS_INC}
+     "// Auto-generated from ErrorStrings.txt at configure time. Do not edit.\n"
+     "struct EmbeddedErrorString { int code; const char* text; };\n"
+     "static const EmbeddedErrorString EmbeddedErrorStrings[] = {\n")
+foreach(_hitas_es_line IN LISTS _hitas_es_lines)
+    if(_hitas_es_line MATCHES "^([A-Za-z0-9_]+) *= *([0-9]+) *= *(.+)")
+        file(APPEND ${HITAS_ERRORSTRINGS_INC} "    {${CMAKE_MATCH_2}, \"${CMAKE_MATCH_3}\"},\n")
+    endif()
+endforeach()
+file(APPEND ${HITAS_ERRORSTRINGS_INC} "};\n")
+
 set(HITAS_SRC
     src/ALList.cpp
     src/AMiscFunc.cpp
@@ -36,6 +56,8 @@ target_include_directories(tauargus_hitas
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
         $<INSTALL_INTERFACE:include>
+    PRIVATE
+        ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 # The original Makefile built with -DSECBOUNDS (secondary bounds enabled).

@@ -69,8 +69,9 @@ public:
     HiTaSCtrl()
     {
         m_ProgressListener = NULL;
-        // Load from file the strings assigned to error-codes
-	//LoadErrorStrings(ErrorStrings);
+        // Error strings are embedded at build time (ErrorStrings.txt, see
+        // CMakeLists.txt); LoadErrorStrings remains as an optional
+        // runtime override from a CWD file.
     
 	// Default settings for JJ-variables, in case of Cplex
 	JJzero        = 1E-7;

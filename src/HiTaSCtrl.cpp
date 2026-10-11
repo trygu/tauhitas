@@ -31,7 +31,18 @@
 #endif
 
 IMPORTFUNC int CSPdefinestoptime(int (*)(void));
-StringTable ErrorStrings;
+
+#include "ErrorStrings_generated.inc"
+
+// Legacy loaded these strings from ErrorStrings.txt in the working directory
+// at runtime (see LoadErrorStrings, kept as an optional override). The
+// headless engine embeds the same table at build time instead.
+StringTable ErrorStrings = []() {
+    StringTable t;
+    for (const auto& e : EmbeddedErrorStrings)
+        t[e.code] = e.text;
+    return t;
+}();
 
 ICallback* m_Callback = NULL;
 
