@@ -21,6 +21,7 @@
 #include "ICallback.h"
 #include <sstream>
 #include <fstream>
+#include <memory>
 #include <stdlib.h>
 #include <cstdio>
 
@@ -345,6 +346,11 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
         std::string tmpname;
 
         FILE *JJIn, *JJUit;
+        // Own both streams across solver errors as well as success. In
+        // particular, a rejected secondary status must not leave JJ.OUT
+        // open and mask error 5008 during Windows temporary-file cleanup.
+        std::unique_ptr<FILE, decltype(&std::fclose)> input_file(nullptr, &std::fclose);
+        std::unique_ptr<FILE, decltype(&std::fclose)> output_file(nullptr, &std::fclose);
         int dum, INumVar, INumCons;
         int i,j, Icell;
         int terms;
@@ -419,7 +425,9 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
         try
         {
             JJIn = OpenFile(InFileJJ,"r");
+            input_file.reset(JJIn);
             JJUit = OpenFile(OutFile,"w");
+            output_file.reset(JJUit);
             LogFile = OpenFile(LogName.c_str(),"a");
             fprintf(LogFile,"InputFile       = %s\n",InFileJJ);
             fprintf(LogFile,"OutputFile      = %s\n\n",OutFile);
@@ -517,7 +525,7 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
             }
         }
 
-        fclose(JJIn);
+        input_file.reset();
         LogFile = OpenFile(LogName.c_str(),"a");
         fprintf(LogFile,"Read Input File\n");
 	fclose(LogFile);
@@ -599,7 +607,7 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
         fprintf(LogFile,"Time needed for optimization: %12.3lf seconds\n",JJTime);
         fclose(LogFile);
 
-	fclose(JJUit);
+	output_file.reset();
 
         CSPfreeprob(Solver);
         freecsp(INumVar, names, data, lpl, upl, spl, lb, ub, weight, states, ncard, rhs, list, val);
