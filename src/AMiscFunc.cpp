@@ -1152,7 +1152,7 @@ int TestNewTable(std::string& TableList,JJTable& Tab,Table& BTab)
                 if (TableList.at(k) != 'z') 
 		{
                     buffer = new char [45];
-                    snprintf(buffer,42,"ERROR: Basistabel is leeg, maar Tstat = %c\n",TableList.at(k));
+                    snprintf(buffer,45,"ERROR: Basistabel is leeg, maar Tstat = %c\n",TableList.at(k));
                     LogPrintf(LogName,buffer);
                     delete [] buffer;
                     return -90;        // Error genereren PWOF 02-12-2011
