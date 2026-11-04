@@ -34,6 +34,12 @@ extern std::string LogName;
 
 std::string to_string(int _Val);
 
+#if defined(__GNUC__) || defined(__clang__)
+__attribute__((format(scanf, 3, 4)))
+#endif
+void ScanFile(FILE *file, int expected, const char *format, ...);
+void ReadFileLine(char *line, int capacity, FILE *file);
+
 void WriteErrorToLog(std::string LogName, int ErrorCode);
 
 std::string PrepFile(const char* Name);

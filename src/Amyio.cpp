@@ -16,6 +16,26 @@
 */
 
 #include "AMyIO.h"
+#include <cstdarg>
+#include <stdexcept>
+
+void ScanFile(FILE *file, int expected, const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    const int actual = vfscanf(file, format, args);
+    va_end(args);
+    if (actual == expected || (expected == 0 && actual == EOF && !ferror(file))) return;
+    fclose(file);
+    throw std::runtime_error("Invalid or truncated HiTaS input");
+}
+
+void ReadFileLine(char *line, int capacity, FILE *file)
+{
+    if (fgets(line, capacity, file)) return;
+    fclose(file);
+    throw std::runtime_error("Invalid or truncated HiTaS input line");
+}
 
 // Used to replace _tcsspnp(str1,str2) that is only defined for Microsoft
 #define _strspnp(_str1, _str2) ((*((_str1)+strspn(_str1,_str2))) ? ((_str1)+strspn(_str1,_str2)) : NULL)
@@ -336,8 +356,8 @@ void AReadHistory(Table BTab, int M, const char* FileName, const char* States)
    {
      for (i=1;i<=M;i++)
        //fscanf(History,"%d ",&ijk[i]);
-         fscanf(History,"%d ",&ijk[i-1]);
-     fscanf(History,"%c\n",&BTab[ijk]->status);
+         ScanFile(History, 1, "%d ",&ijk[i-1]);
+     ScanFile(History, 1, "%c\n",&BTab[ijk]->status);
      // Controleer ingelezen status
      if (strchr(States,BTab[ijk]->status) == NULL)
      {
@@ -390,8 +410,8 @@ void ReadBTInfo(Table& BTab, int M, const char* FileName, const char* States)
    {
      for (i=1;i<=M;i++)
        //fscanf(BTInfo,"%d ",&ijk[i]);
-         fscanf(BTInfo,"%d ",&ijk[i-1]);
-     fscanf(BTInfo,"%c",&BTab[ijk]->status);
+         ScanFile(BTInfo, 1, "%d ",&ijk[i-1]);
+     ScanFile(BTInfo, 1, "%c",&BTab[ijk]->status);
      
 	 // Controleer ingelezen status
      if (strchr(States,BTab[ijk]->status) == NULL)
@@ -414,7 +434,7 @@ void ReadBTInfo(Table& BTab, int M, const char* FileName, const char* States)
 	 // Voorlopig alleen Pbounds lpl en upl inlezen voor status u en b
 	 if (strchr("ub",BTab[ijk]->status))
 	 {
-		fscanf(BTInfo," %lf %lf",&lb, &ub);
+		ScanFile(BTInfo, 2, " %lf %lf",&lb, &ub);
 		//if (BTab[ijk]->Pbounds.GetSize()==0) 
                 if (BTab[ijk]->Pbounds.size()==0) 
 		{
@@ -428,7 +448,7 @@ void ReadBTInfo(Table& BTab, int M, const char* FileName, const char* States)
 		}
 	 }
 
-     fscanf(BTInfo,"\n"); 
+     ScanFile(BTInfo, 0, "\n");
    }
    fclose(BTInfo);
    //ijk.Free();

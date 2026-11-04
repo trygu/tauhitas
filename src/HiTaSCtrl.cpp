@@ -439,7 +439,7 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
             return(code);
         }
                 
-        fscanf(JJIn,"%d\n",&dum); 
+        ScanFile(JJIn, 1, "%d\n",&dum);
         if (dum) // File should start with 0
 	{
             WriteErrorToLog(LogName,HITAS_WRONGHITASCALL); 
@@ -451,7 +451,7 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
 	fprintf(LogFile,"Start reading cells\n");
 	fclose(LogFile);
 
-        fscanf(JJIn,"%d\n",&INumVar);
+        ScanFile(JJIn, 1, "%d\n",&INumVar);
 
         names    = (char **) malloc( INumVar*sizeof(char *) );
         data     = (double *)malloc( INumVar*sizeof(double) );
@@ -465,7 +465,7 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
 
         for (i=0;i<INumVar;i++)
         {
-            fscanf(JJIn,"%d %lf %d %c %lf %lf %lf %lf %lf\n",&dum,&d_,&w_,&s_,&lb_,&ub_,&lpl_,&upl_,&spl_);
+            ScanFile(JJIn, 9, "%d %lf %d %c %lf %lf %lf %lf %lf\n",&dum,&d_,&w_,&s_,&lb_,&ub_,&lpl_,&upl_,&spl_);
             tmpname.clear();
             tmpname.append("x");
             tmpname.append(to_string(dum));
@@ -485,7 +485,7 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
 	fprintf(LogFile,"Start reading constraints\n");
 	fclose(LogFile);
         
-	fscanf(JJIn,"%d\n",&INumCons);
+	ScanFile(JJIn, 1, "%d\n",&INumCons);
 
 	ncard = (int *)   malloc( INumCons*sizeof(int) );
 	rhs   = (double *)malloc( INumCons*sizeof(double) );
@@ -497,7 +497,7 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
         int listsize = 0;
         for (i=0;i<INumCons;i++)
         {
-	    fscanf(JJIn,"%lf %d :", &d_, &terms);
+	    ScanFile(JJIn, 2, "%lf %d :", &d_, &terms);
             //int size = 0;
             //if (list) size = _msize(list)/sizeof(int);
             listsize += terms;
@@ -512,7 +512,7 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
                 
             for (j=0;j<terms;j++)
             {
-                fscanf(JJIn," %d (%d)",&Icell,&v_);
+                ScanFile(JJIn, 2, " %d (%d)",&Icell,&v_);
                 list[t] = Icell;
                 val[t] = v_;
                 t++;
@@ -746,7 +746,7 @@ long HiTaSCtrl::AHiTaS(const char* ParsFile, const char* FilesFile, long MaxTime
         ReadConstants(ParsFile);          // Read some additional constants
 
         Info = OpenFile(FilesFile,"r");
-        fscanf(Info, "%d\n", &M);        // M = number of variables
+        ScanFile(Info, 1, "%d\n", &M);        // M = number of variables
         PrintConstants(LogName.c_str(),M);      // Write constants to log-file
 
         // Can initialize now M is known
@@ -768,7 +768,7 @@ long HiTaSCtrl::AHiTaS(const char* ParsFile, const char* FilesFile, long MaxTime
         
         for (i=1;i<=M;i++)           // Read hierarchy per variable
         {
-        fgets(line,MAXLINE,Info);
+        ReadFileLine(line,MAXLINE,Info);
         FileName = strtok(line,"\n");
         
         ReadCodeNames(FileName.c_str(), VarNames[i-1]); // VarNames has external code in correct order 
@@ -798,7 +798,7 @@ long HiTaSCtrl::AHiTaS(const char* ParsFile, const char* FilesFile, long MaxTime
         }
         fclose(Uit);
  
-        fgets(line,MAXLINE,Info);
+        ReadFileLine(line,MAXLINE,Info);
         BTabFileName = strtok(line,"\n");
         fclose(Info);
 
@@ -889,10 +889,10 @@ long HiTaSCtrl::AHiTaS(const char* ParsFile, const char* FilesFile, long MaxTime
             // Write results
 
             Info = OpenFile(FilesFile,"r");
-            fscanf(Info,"%d ",&M);
+            ScanFile(Info, 1, "%d ",&M);
             for (i=1;i<=M+1;i++)           // Hierarchy files and BTab file
-                fgets(line,MAXLINE,Info);
-            fgets(line,MAXLINE,Info);
+                ReadFileLine(line,MAXLINE,Info);
+            ReadFileLine(line,MAXLINE,Info);
             FileName = strtok(line,"\n");
             fclose(Info);
                 
@@ -1225,10 +1225,10 @@ long HiTaSCtrl::AHiTaS(const char* ParsFile, const char* FilesFile, long MaxTime
                 if (!DaCapo)   // Finished!
                 {
                     Info = OpenFile(FilesFile,"r");
-                    fscanf(Info, "%d\n", &M);        // Read number of variables
+                    ScanFile(Info, 1, "%d\n", &M);        // Read number of variables
                     for (i=1;i<=M+1;i++)             // Hierarchy files and BTAB file
-                        fgets(line,MAXLINE,Info);
-                    fgets(line,MAXLINE,Info);
+                        ReadFileLine(line,MAXLINE,Info);
+                    ReadFileLine(line,MAXLINE,Info);
                     FileName = strtok(line,"\n");
                     fclose(Info);
                                 

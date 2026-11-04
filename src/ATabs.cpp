@@ -129,7 +129,7 @@ int Table::ReadData(const char* FName)
     position=0;               // position is in (n-1)-dim. tabel
     for (size_t k=1;k<subdims.size();k++)
     {
-	fscanf(Invoer,"%d ",&coord);
+	ScanFile(Invoer, 1, "%d ",&coord);
 	//position += coord*subdims[k];
         position += coord*subdims[k-1];
     }
@@ -139,14 +139,14 @@ int Table::ReadData(const char* FName)
         CreateColumn(body[position],subdims[subdims.size()-1]);
     }
 
-    fscanf(Invoer,"%d %lf %c",&coord,&value,&status);
+    ScanFile(Invoer, 3, "%d %lf %c",&coord,&value,&status);
 	
     body[position][coord].value=value;
     body[position][coord].status=status;
 	
 	if (strchr("ubm",status)!=NULL)
 	{
-                fscanf(Invoer,"%lf %lf",&lb,&ub);
+                ScanFile(Invoer, 2, "%lf %lf",&lb,&ub);
                 if (body[position][coord].Pbounds.size()==0)  
                 {
                         body[position][coord].Pbounds.push_back(lb);    // Voorlopig alleen lpl en upl
@@ -159,7 +159,7 @@ int Table::ReadData(const char* FName)
                 }
 	}
 
-	fscanf(Invoer,"%d %lf\n",&counter,&cost); // read remainder of line
+	ScanFile(Invoer, 2, "%d %lf\n",&counter,&cost); // read remainder of line
 
 	if (status != 'n')						  // neglegt remainder of line for 'n'-cells
 	{
