@@ -47,7 +47,7 @@ void Table::Make(std::vector<int> Dims)
   if (body==NULL) 
   {
 	  WriteErrorToLog(LogName,HITAS_NOTENOUGHMEMORY);
-	  exit(HITAS_NOTENOUGHMEMORY);
+	  throw(HITAS_NOTENOUGHMEMORY);
   }
   for (int i=0;i<size;i++)
     body[i] = NULL;
@@ -289,13 +289,13 @@ void Table::CreateColumn(column& newcol, int N)
 	if (newcol != NULL) 
 	{
 		WriteErrorToLog(LogName,HITAS_RECREATECOLUMN);
-		exit(HITAS_RECREATECOLUMN);
+		throw(HITAS_RECREATECOLUMN);
 	}
 	newcol = new cell[N];
 	if (newcol==NULL) 
 	{
 		WriteErrorToLog(LogName,HITAS_NOTENOUGHMEMORY);
-		exit(HITAS_NOTENOUGHMEMORY);
+		throw(HITAS_NOTENOUGHMEMORY);
 	}
 	for (int i=0;i<N;i++)
 	{
@@ -343,7 +343,7 @@ void JJTable::Init(std::vector<int> L)
 	if (ijk[i]==NULL) 
 	{
 		WriteErrorToLog(LogName,HITAS_NOTENOUGHMEMORY);
-		exit(HITAS_NOTENOUGHMEMORY);
+		throw(HITAS_NOTENOUGHMEMORY);
 	}
   }
 
@@ -352,7 +352,7 @@ void JJTable::Init(std::vector<int> L)
   if (baseijk==NULL) 
   {
 	  WriteErrorToLog(LogName,HITAS_NOTENOUGHMEMORY);
-	  exit(HITAS_NOTENOUGHMEMORY);
+	  throw(HITAS_NOTENOUGHMEMORY);
   }
   for (i=0;i<size;i++){
     //baseijk[i].Make(basedim);
@@ -364,7 +364,7 @@ void JJTable::Init(std::vector<int> L)
   if (weight==NULL) 
   {
 	  WriteErrorToLog(LogName,HITAS_NOTENOUGHMEMORY);
-	  exit(HITAS_NOTENOUGHMEMORY);
+	  throw(HITAS_NOTENOUGHMEMORY);
   }
   //for (i=0;i<size;i++) weight[i] = (int) MAXDISTANCE;
   for (i=0;i<size;i++) weight[i] = (int) MAXWEIGHT;
@@ -373,7 +373,7 @@ void JJTable::Init(std::vector<int> L)
   if (costs==NULL) 
   {
 	  WriteErrorToLog(LogName,HITAS_NOTENOUGHMEMORY);
-	  exit(HITAS_NOTENOUGHMEMORY);
+	  throw(HITAS_NOTENOUGHMEMORY);
   }
   for (i=0;i<size;i++) costs[i] = MAXDISTANCE;            
 
@@ -381,49 +381,49 @@ void JJTable::Init(std::vector<int> L)
   if (count==NULL) 
   {
 	  WriteErrorToLog(LogName,HITAS_NOTENOUGHMEMORY);
-	  exit(HITAS_NOTENOUGHMEMORY);
+	  throw(HITAS_NOTENOUGHMEMORY);
   }
   
   data = (double*) malloc(size*sizeof(double));   
   if (data==NULL) 
   {
 	  WriteErrorToLog(LogName,HITAS_NOTENOUGHMEMORY);
-	  exit(HITAS_NOTENOUGHMEMORY);
+	  throw(HITAS_NOTENOUGHMEMORY);
   }
   
   lpl = (double*) malloc(size*sizeof(double));
   if (lpl==NULL) 
   {
 	  WriteErrorToLog(LogName,HITAS_NOTENOUGHMEMORY);
-	  exit(HITAS_NOTENOUGHMEMORY);
+	  throw(HITAS_NOTENOUGHMEMORY);
   }
   
   upl = (double*) malloc(size*sizeof(double));
   if (upl==NULL) 
   {
 	  WriteErrorToLog(LogName,HITAS_NOTENOUGHMEMORY);
-	  exit(HITAS_NOTENOUGHMEMORY);
+	  throw(HITAS_NOTENOUGHMEMORY);
   }
   
   lb = (double*) malloc(size*sizeof(double));
   if (lb==NULL) 
   {
 	  WriteErrorToLog(LogName,HITAS_NOTENOUGHMEMORY);
-	  exit(HITAS_NOTENOUGHMEMORY);
+	  throw(HITAS_NOTENOUGHMEMORY);
   }
   
   ub = (double*) malloc(size*sizeof(double));
   if (ub==NULL) 
   {
 	  WriteErrorToLog(LogName,HITAS_NOTENOUGHMEMORY);
-	  exit(HITAS_NOTENOUGHMEMORY);
+	  throw(HITAS_NOTENOUGHMEMORY);
   }
   
   status = (char*) malloc(size*sizeof(char));
   if (status==NULL) 
   {
 	  WriteErrorToLog(LogName,HITAS_NOTENOUGHMEMORY);
-	  exit(HITAS_NOTENOUGHMEMORY);
+	  throw(HITAS_NOTENOUGHMEMORY);
   }	  
   for (i=0;i<size;i++)
 	  status[i]='s';  // Zonder voorkennis is alles publicabel

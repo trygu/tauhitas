@@ -41,14 +41,16 @@ void WriteErrorToLog(std::string LogName, int ErrorCode) // Finds ErrorString be
 
 void LogPrintf(std::string LogName, std::string LogMessage) // Appends LogMessage to file LogName
 {
-	LogFile = OpenFile(LogName.c_str(),"a");
+	LogFile = fopen(LogName.c_str(),"a");
+    if (!LogFile) throw(HITAS_FILEWRITE);
 	fprintf(LogFile,"%s",LogMessage.c_str());
 	fclose(LogFile);
 }
 
 void LogPrintf(std::string LogName, const char* LogMessage) // Appends LogMessage to file LogName
 {
-	LogFile = OpenFile(LogName.c_str(),"a");
+	LogFile = fopen(LogName.c_str(),"a");
+    if (!LogFile) throw(HITAS_FILEWRITE);
 	fprintf(LogFile,"%s",LogMessage);
 	fclose(LogFile);
 }

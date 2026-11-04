@@ -100,7 +100,7 @@ void ReadHierarch(Hierarchy& out, int& Bdim, const char* filename, bool RemoveBo
       LogPrintf(LogName,filename);
       LogPrintf(LogName,"not found\n");
       WriteErrorToLog(LogName,HITAS_FILENOTFOUND);
-      exit(HITAS_FILENOTFOUND);
+      throw(HITAS_FILENOTFOUND);
   }
   out.Init();                  // Initialiseer nieuwe variabele
   dummy.Init();
@@ -121,7 +121,7 @@ void ReadHierarch(Hierarchy& out, int& Bdim, const char* filename, bool RemoveBo
 	  {
                 LogPrintf(LogName,"Not enough memory for string name\n");
 		WriteErrorToLog(LogName,HITAS_NOTENOUGHMEMORY);
-		exit(HITAS_NOTENOUGHMEMORY);
+		throw(HITAS_NOTENOUGHMEMORY);
 	  }
       strncat(name,catname,namelength);  // name bevat nu "puur" de naam
     
@@ -225,7 +225,7 @@ void ReadCodeNames(const char* FileName, std::vector<std::string>& Var)
         LogPrintf(LogName,FileName);
         LogPrintf(LogName,"not found\n");
         WriteErrorToLog(LogName,HITAS_FILENOTFOUND);
-	exit(HITAS_FILENOTFOUND);
+	throw(HITAS_FILENOTFOUND);
   }
   while(!feof(in))
   {
