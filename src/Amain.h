@@ -23,6 +23,9 @@
 #include <map>
 #include "WrapCSP.h"
 
+#ifdef TAUARGUS_STATIC
+#define MAX_TIME TAUARGUS_HITAS_MAX_TIME
+#endif
 double MAX_TIME;
 extern double ZERO;
 extern double ZERO_1;

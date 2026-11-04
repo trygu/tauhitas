@@ -49,8 +49,12 @@ if(WIN32)
     list(APPEND HITAS_SRC src/Versioninfo.rc)
 endif()
 
-add_library(tauargus_hitas SHARED ${HITAS_SRC})
+option(BUILD_SHARED_LIBS "Build shared native libraries" ON)
+add_library(tauargus_hitas ${HITAS_SRC})
 add_library(tauargus::hitas ALIAS tauargus_hitas)
+if(NOT BUILD_SHARED_LIBS)
+    target_compile_definitions(tauargus_hitas PUBLIC TAUARGUS_STATIC)
+endif()
 
 target_include_directories(tauargus_hitas
     PUBLIC

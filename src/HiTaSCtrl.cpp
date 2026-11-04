@@ -25,12 +25,6 @@
 #include <stdlib.h>
 #include <cstdio>
 
-#if defined(_WIN32) || defined(__WIN32__) || defined(__CYGWIN__)
-    #define IMPORTFUNC __declspec(dllimport)
-#else
-    #define IMPORTFUNC __attribute__ ((visibility("default")))
-#endif
-
 IMPORTFUNC int CSPdefinestoptime(int (*)(void));
 
 #include "ErrorStrings_generated.inc"
@@ -45,7 +39,7 @@ StringTable ErrorStrings = []() {
     return t;
 }();
 
-ICallback* m_Callback = NULL;
+static ICallback* m_Callback = NULL;
 
 int MyStopTime()
 {

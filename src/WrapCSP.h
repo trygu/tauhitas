@@ -19,7 +19,9 @@
 #define	WRAPCSP_H
 #include "IProgressListener.h"
 
-#if defined(_WIN32) || defined(__WIN32__) || defined(__CYGWIN__)
+#if defined(TAUARGUS_STATIC)
+    #define IMPORTFUNC
+#elif defined(_WIN32) || defined(__WIN32__) || defined(__CYGWIN__)
     #define IMPORTFUNC __declspec(dllimport)
 #else
     #define IMPORTFUNC __attribute__ ((visibility("default")))

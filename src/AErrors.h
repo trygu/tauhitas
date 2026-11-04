@@ -21,6 +21,9 @@
 #include "resource.h"
 
 /* Variables for JJ, used to be defined in cspdef.h */
+#ifdef TAUARGUS_STATIC
+#define MAX_TIME TAUARGUS_HITAS_MAX_TIME
+#endif
 extern double MAX_TIME;
 extern double ZERO;
 extern double ZERO_1;
