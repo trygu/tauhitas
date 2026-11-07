@@ -549,11 +549,13 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
         // CSPoptimize reports a failed run through its return value
         // (the error flag recorded by CSPexit inside the solver). A
         // nonzero result means the run was aborted and must surface as
-        // a failure, not as an optimal or sub-optimal solution.
+        // a solver failure (JJ_LPSOLVER), not as an optimal or
+        // sub-optimal solution, and not as the infeasible-model code
+        // LB_EQ_UB_EQ_INF.
         res = CSPoptimize(Solver,m_ProgressListener); // m_ProgressListener needed for firing LB and UB from inside of JJ-code
         if (res != 0)
         {
-            WriteErrorToLog(LogName,LB_EQ_UB_EQ_INF);
+            WriteErrorToLog(LogName,JJ_LPSOLVER);
             CSPfreeprob(Solver);
             freecsp(INumVar, names, data, lpl, upl, spl, lb, ub, weight, states, ncard, rhs, list, val);
             CSPFreeFileNames(Solver);
@@ -562,7 +564,7 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
             LogFile = OpenFile(LogName.c_str(),"a");
             fprintf(LogFile,"Memory freed\n");
             fclose(LogFile);
-            return(LB_EQ_UB_EQ_INF);
+            return(JJ_LPSOLVER);
         }
 
         JJTime = seconds() - JJTime; // t0 is now time needed to optimize

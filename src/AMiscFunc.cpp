@@ -1006,8 +1006,14 @@ int Suppress(const char* Solver, JJTable& Tab, int Rdim, bool DoCosts, double& M
   }
 
   if (CSPoptimize(Solver,NULL)){
-        ucost = CSPGetDoubleConstant(Solver,JJINF);
-        lcost = ucost;
+        // Solver failure: report JJ_LPSOLVER instead of faking
+        // infeasibility (ucost = lcost = JJINF), which would write
+        // InFeas.dat for a possibly feasible table. Mirrors the
+        // load-failure throw above; the host catch logs and returns
+        // the code.
+        WriteErrorToLog(LogName,JJ_LPSOLVER);
+        CSPfreeprob(Solver);
+        throw(JJ_LPSOLVER);
   }
   else{
         CSPsolution(Solver,&lcost, &ucost, Tab.status);
