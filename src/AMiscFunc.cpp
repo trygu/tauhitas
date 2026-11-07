@@ -1005,7 +1005,6 @@ int Suppress(const char* Solver, JJTable& Tab, int Rdim, bool DoCosts, double& M
 	  throw(HITAS_JJNOTLOADED);
   }
 
-//  CSPoptimize(Solver,NULL);
   if (CSPoptimize(Solver,NULL)){
         ucost = CSPGetDoubleConstant(Solver,JJINF);
         lcost = ucost;
