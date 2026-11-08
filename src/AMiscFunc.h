@@ -61,5 +61,5 @@ int TestNewTable(std::string& TableList, JJTable& Tab, Table& BTab);
 int ReadOldStats(std::string TableList, JJTable& Tab);
 
 double MyRound(double x, int dec);
-double seconds();
+double hitas_seconds();
 #endif

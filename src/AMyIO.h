@@ -29,7 +29,7 @@
 #define __min(a,b)  (((a) < (b)) ? (a) : (b))
 #define __max(a,b)  (((a) > (b)) ? (a) : (b))
 extern bool PPDEBUG;
-extern double seconds();
+extern double hitas_seconds();
 extern std::string LogName;
 
 std::string to_string(int _Val);

@@ -179,7 +179,11 @@ void HiTaSCtrl::freecsp(int ncells, char **names, double *data, double *lpl, dou
 
 void HiTaSCtrl::CleanUp()
 {
-    ErrorStrings.clear();
+    /* The embedded ErrorStrings table is a process-wide global,
+       initialized once at startup. It must not be cleared here:
+       the R front-end finalizes HiTaSCtrl objects at GC, so a
+       clear would permanently blank error text for every later
+       object in the process. */
 }
 
 //void HiTaSCtrl::FreeHierVector(Vector<Hierarchy>& VS)
@@ -543,7 +547,7 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
             return(code);
 	}
         
-        JJTime = seconds(); // Start-time for optimization
+        JJTime = hitas_seconds(); // Start-time for optimization
         LogPrintf(LogName,"Start Optimizing\n");
 
         // CSPoptimize reports a failed run through its return value
@@ -567,7 +571,7 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
             return(JJ_LPSOLVER);
         }
 
-        JJTime = seconds() - JJTime; // t0 is now time needed to optimize
+        JJTime = hitas_seconds() - JJTime; // t0 is now time needed to optimize
         
         LogPrintf(LogName,"Get solution\n");
 	try
@@ -702,7 +706,7 @@ long HiTaSCtrl::AHiTaS(const char* ParsFile, const char* FilesFile, long MaxTime
         res = CheckStart(Solver,ILMFile);
         if (res != 0) return (res);
         
-        TotalTime = seconds();
+        TotalTime = hitas_seconds();
         //Infile = OpenFile(ParsFile,"r");
 
         MAX_TIME=MaxTime*60.0; // MaxTime in minutes, MAX_TIME in seconds
@@ -1274,7 +1278,7 @@ long HiTaSCtrl::AHiTaS(const char* ParsFile, const char* FilesFile, long MaxTime
             return(LB_EQ_UB_EQ_INF);
         }
 
-        TotalTime = seconds() - TotalTime;
+        TotalTime = hitas_seconds() - TotalTime;
         Uit = OpenFile(LogName.c_str(),"a");
         fprintf(Uit,"Totaltime: %10.2lf seconds, with %10.2lf seconds JJ-code (= %5.2lf%%)\n",TotalTime,JJTotalTime,100*(JJTotalTime/TotalTime));
         fclose(Uit);

@@ -39,7 +39,13 @@ double MyRound(double x, int dec)
 	return floor(tmp+0.5)*pow(10.0,-dec);
 }
 
-double seconds()
+/* Named hitas_seconds() (not seconds()): the legacy csp module
+   defines its own float seconds() with C++ linkage, and both
+   mangle to the same symbol. When the modules are linked into one
+   image (the R front-end) the double version won and every csp
+   caller read a float out of the low half of the double return,
+   corrupting all csp timing. */
+double hitas_seconds()
 {
   return((double)clock()/CLOCKS_PER_SEC);
 }
