@@ -466,6 +466,10 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
         ub       = (double *)malloc( INumVar*sizeof(double) );
         weight   = (int *)   malloc( INumVar*sizeof(int) );
         states   = (char *)  malloc( INumVar*sizeof(char) );
+        if (!names || !data || !lpl || !upl || !spl || !lb || !ub || !weight || !states) {
+            WriteErrorToLog(LogName,HITAS_NOTENOUGHMEMORY);
+            return (HITAS_NOTENOUGHMEMORY);
+        }
 
         for (i=0;i<INumVar;i++)
         {
@@ -474,6 +478,10 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
             tmpname.append("x");
             tmpname.append(to_string(dum));
             names[i] = (char *)malloc( (tmpname.size()+1) * sizeof(char) );
+            if (!names[i]) {
+                WriteErrorToLog(LogName,HITAS_NOTENOUGHMEMORY);
+                return (HITAS_NOTENOUGHMEMORY);
+            }
             strcpy(names[i],tmpname.c_str());
             data[i] = d_;
             weight[i] = w_;
@@ -493,6 +501,10 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
 
 	ncard = (int *)   malloc( INumCons*sizeof(int) );
 	rhs   = (double *)malloc( INumCons*sizeof(double) );
+	if (!ncard || !rhs) {
+	    WriteErrorToLog(LogName,HITAS_NOTENOUGHMEMORY);
+	    return (HITAS_NOTENOUGHMEMORY);
+	}
 
         list = NULL;
         val  = NULL;
