@@ -325,8 +325,14 @@ double HiTaSCtrl::GetJJconstantsDbl(const int ConstName)
 
 std::string HiTaSCtrl::GetErrorString(int ErrorNumber)
 {
-    return ErrorStrings[ErrorNumber];
-}    
+    // A code missing from the catalog (e.g. a solver-internal value) must
+    // not come back empty; answer the same fallback the core uses.
+    std::map<int, std::string>::const_iterator it = ErrorStrings.find(ErrorNumber);
+    if (it != ErrorStrings.end()) {
+        return it->second;
+    }
+    return "UnKnown Error (" + std::to_string(ErrorNumber) + ")";
+}
 
 std::string HiTaSCtrl::GetVersion(){
     return VERSIONNUMBER;
