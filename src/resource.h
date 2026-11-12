@@ -20,6 +20,9 @@
 #include <map>
 #include <string>
 
+/* Fallback for builds outside the superbuild. The superbuild injects
+ * TAUARGUS_ENGINE_VERSION from engine/ENGINE-VERSION (the train version),
+ * which HiTaSCtrl::GetVersion prefers when defined. */
 #define VERSIONNUMBER "4.3.1.1"
 
 // ID's for JJ variables

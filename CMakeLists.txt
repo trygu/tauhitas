@@ -52,6 +52,14 @@ endif()
 option(BUILD_SHARED_LIBS "Build shared native libraries" ON)
 add_library(tauargus_hitas ${HITAS_SRC})
 add_library(tauargus::hitas ALIAS tauargus_hitas)
+
+# The train version. The superbuild injects it from engine/ENGINE-VERSION;
+# a standalone module build falls back to VERSIONNUMBER in resource.h.
+if(NOT DEFINED TAUARGUS_ENGINE_VERSION)
+    set(TAUARGUS_ENGINE_VERSION "4.3.1.1")
+endif()
+target_compile_definitions(tauargus_hitas PRIVATE
+    TAUARGUS_ENGINE_VERSION="${TAUARGUS_ENGINE_VERSION}")
 if(NOT BUILD_SHARED_LIBS)
     target_compile_definitions(tauargus_hitas PUBLIC TAUARGUS_STATIC)
 endif()

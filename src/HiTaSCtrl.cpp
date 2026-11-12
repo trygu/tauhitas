@@ -335,7 +335,11 @@ std::string HiTaSCtrl::GetErrorString(int ErrorNumber)
 }
 
 std::string HiTaSCtrl::GetVersion(){
+#ifdef TAUARGUS_ENGINE_VERSION
+    return TAUARGUS_ENGINE_VERSION;
+#else
     return VERSIONNUMBER;
+#endif
 }
 
 void HiTaSCtrl::SetDebugMode(bool debug)
