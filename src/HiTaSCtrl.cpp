@@ -325,11 +325,21 @@ double HiTaSCtrl::GetJJconstantsDbl(const int ConstName)
 
 std::string HiTaSCtrl::GetErrorString(int ErrorNumber)
 {
-    return ErrorStrings[ErrorNumber];
-}    
+    // A code missing from the catalog (e.g. a solver-internal value) must
+    // not come back empty; answer the same fallback the core uses.
+    std::map<int, std::string>::const_iterator it = ErrorStrings.find(ErrorNumber);
+    if (it != ErrorStrings.end()) {
+        return it->second;
+    }
+    return "UnKnown Error (" + std::to_string(ErrorNumber) + ")";
+}
 
 std::string HiTaSCtrl::GetVersion(){
+#ifdef TAUARGUS_ENGINE_VERSION
+    return TAUARGUS_ENGINE_VERSION;
+#else
     return VERSIONNUMBER;
+#endif
 }
 
 void HiTaSCtrl::SetDebugMode(bool debug)
@@ -340,6 +350,18 @@ void HiTaSCtrl::SetDebugMode(bool debug)
 // Apply Optimal a.k.a. FullJJ
 long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, const char* ILMFile, const char* OutDir, const char* Solver)
 {
+        // 0.7.0 error contract: contain the legacy raw-int error codes
+        // inside this library. The legacy port (OpenFile/LogPrintf in
+        // Amyio.cpp, the ATabs/AMyLoadProb malloc checks) throws plain
+        // int codes. On Linux every engine library and the bindings
+        // statically link their own libstdc++/libgcc, so an int thrown
+        // in this DSO cannot be type-matched by a catch clause in the
+        // binding's DSO (two separate C++ ABI runtimes) and the
+        // uncaught int aborts the process (std::terminate); macOS links
+        // the shared system libc++ and did not hit this. Convert every
+        // escaping int to the return code the contract already
+        // promises (0 = OK, else a HITAS_* code).
+        try {
         long res;
         std::string tmpname;
 
@@ -466,6 +488,10 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
         ub       = (double *)malloc( INumVar*sizeof(double) );
         weight   = (int *)   malloc( INumVar*sizeof(int) );
         states   = (char *)  malloc( INumVar*sizeof(char) );
+        if (!names || !data || !lpl || !upl || !spl || !lb || !ub || !weight || !states) {
+            WriteErrorToLog(LogName,HITAS_NOTENOUGHMEMORY);
+            return (HITAS_NOTENOUGHMEMORY);
+        }
 
         for (i=0;i<INumVar;i++)
         {
@@ -474,6 +500,10 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
             tmpname.append("x");
             tmpname.append(to_string(dum));
             names[i] = (char *)malloc( (tmpname.size()+1) * sizeof(char) );
+            if (!names[i]) {
+                WriteErrorToLog(LogName,HITAS_NOTENOUGHMEMORY);
+                return (HITAS_NOTENOUGHMEMORY);
+            }
             strcpy(names[i],tmpname.c_str());
             data[i] = d_;
             weight[i] = w_;
@@ -493,6 +523,10 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
 
 	ncard = (int *)   malloc( INumCons*sizeof(int) );
 	rhs   = (double *)malloc( INumCons*sizeof(double) );
+	if (!ncard || !rhs) {
+	    WriteErrorToLog(LogName,HITAS_NOTENOUGHMEMORY);
+	    return (HITAS_NOTENOUGHMEMORY);
+	}
 
         list = NULL;
         val  = NULL;
@@ -629,11 +663,22 @@ long HiTaSCtrl::FullJJ(const char* InFileJJ, const char* OutFile, long MaxTime, 
             return 0;       // Optimal integer solution
         else
             return 1;       // Sub-optimal integer solution
+        }
+        catch (int code)
+        {
+            return code;
+        }
 }
 
 long HiTaSCtrl::AHiTaS(const char* ParsFile, const char* FilesFile, long MaxTime, const char* ILMFile, const char* TauOutDir, const char* Solver, bool DoSingleWithSingle, bool DoSingleWithMore, bool DoCountBounds)
 {
-        FILE *Info, *TabUit, *Uit, *XUit, *JJUit, *BTUit; 
+        // Same raw-int containment as FullJJ (see there): CheckStart
+        // runs before any internal try block, and several
+        // WriteErrorToLog/OpenFile sites in this function are
+        // unguarded, so an unwritable log directory would otherwise
+        // throw a plain int out of this library.
+        try {
+        FILE *Info, *TabUit, *Uit, *XUit, *JJUit, *BTUit;
         
         std::string OutName, TrickName, BTName, BTTabsName, XOutName;
         std::string TableList, TableName, TmpTableName, FileName, BTabFileName, TmpName;
@@ -1288,4 +1333,9 @@ long HiTaSCtrl::AHiTaS(const char* ParsFile, const char* FilesFile, long MaxTime
         //D.Free();
 
         return 0;
+        }
+        catch (int code)
+        {
+            return code;
+        }
 }
